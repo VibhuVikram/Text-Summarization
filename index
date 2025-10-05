@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BART Summarizer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css"> <!-- Your custom CSS -->
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center text-primary">Text Summarizer Using BART</h1>
+        <form id="summarize-form" class="mt-4">
+            <div class="form-group">
+                <textarea id="text-input" name="text" class="form-control" rows="10" placeholder="Enter text to summarize"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success btn-block">Summarize</button>
+        </form>
+
+        <h2 class="mt-4">Summary:</h2>
+        <div id="summary-result" class="alert alert-info" role="alert"></div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('summarize-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const text = document.getElementById('text-input').value;
+
+            fetch('/summarize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `text=${encodeURIComponent(text)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const summaryResult = document.getElementById('summary-result');
+                if (data.summary) {
+                    summaryResult.innerText = data.summary;
+                    summaryResult.classList.remove('alert-info');
+                    summaryResult.classList.add('alert-success');
+                } else {
+                    summaryResult.innerText = "Error: " + data.error;
+                    summaryResult.classList.remove('alert-info');
+                    summaryResult.classList.add('alert-danger');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
